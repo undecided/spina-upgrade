@@ -1,8 +1,8 @@
 namespace :spina do
 
   task photo_to_image: :environment do
-    bar = ProgressBar.create title: "Photos", total: Spina::Photo.count
-    Spina::Photo.find_each do |photo|
+    bar = ProgressBar.create title: "Photos", total: Spina::Photo.where(image_id: nil).count
+    Spina::Photo.where(image_id: nil).find_each do |photo|
       image = Spina::Image.create(media_folder_id: photo.media_folder_id)
       begin
         image.file.attach(io: photo.file.sanitized_file.file, filename: photo.name)
