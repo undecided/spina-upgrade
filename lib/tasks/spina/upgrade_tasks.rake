@@ -3,16 +3,18 @@ namespace :spina do
   task convert_page_parts_to_json: :environment do
     Spina::Page.all.each do |page|
       page_parts = Spina::PagePart.where(page_id: page.id)
-      page_parts.each do |page_part|
+      json_content = page_parts.map do |page_part|
         next if page_part.partable.nil? # Skip blank page parts
 
-        if page_part.partable.respond_to?(:convert_to_json!)
-          puts page_part.convert_to_json!
+        json_part = if page_part.partable.respond_to?(:convert_to_json!)
+          page_part.convert_to_json!
         else
           puts "#{page_part.name} (#{page_part.page_partable_type}) does not convert to JSON yet. Implement it first."
+          nil
         end
+      end.compact
 
-      end
+      page.update(nl_content: json_content)
     end
   end
 

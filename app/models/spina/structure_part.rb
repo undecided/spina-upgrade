@@ -16,5 +16,11 @@ module Spina
     alias_attribute :partable_id, :structure_partable_id
     alias_attribute :partable_type, :structure_partable_type
     alias_method :structure_partable_attributes=, :partable_attributes=
+
+    def convert_to_json!
+      new_part = structure_partable.convert_to_json!
+      new_part.name = name
+      new_part
+    end
   end
 end
