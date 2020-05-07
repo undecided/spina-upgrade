@@ -1,5 +1,21 @@
 namespace :spina do
 
+  task convert_page_parts_to_json: :environment do
+    Spina::Page.all.each do |page|
+      page_parts = Spina::PagePart.where(page_id: page.id)
+      page_parts.each do |page_part|
+        next if page_part.partable.nil? # Skip blank page parts
+
+        if page_part.partable.respond_to?(:convert_to_json!)
+          puts page_part.convert_to_json!
+        else
+          puts "#{page_part.name} (#{page_part.page_partable_type}) does not convert to JSON yet. Implement it first."
+        end
+
+      end
+    end
+  end
+
   task photo_to_image: :environment do
     bar = ProgressBar.create title: "Photos", total: Spina::Photo.where(image_id: nil).count
     Spina::Photo.where(image_id: nil).find_each do |photo|
