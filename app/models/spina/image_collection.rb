@@ -19,5 +19,15 @@ module Spina
       old_update(attributes)
     end
 
+    def convert_to_json!
+      json_part = Spina::Parts::ImageCollection.new
+      json_part.images = images.order(:position).map do |image|
+        image_json_part = image.convert_to_json!
+        image_json_part.name = page_part.name
+        image_json_part
+      end
+      json_part
+    end
+
   end
 end
