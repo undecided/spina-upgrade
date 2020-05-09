@@ -1,5 +1,6 @@
 module Spina
   class PagePart < ApplicationRecord
+    belongs_to :page
     belongs_to :page_partable, polymorphic: true
 
     def convert_to_json!
