@@ -1,7 +1,7 @@
 namespace :spina do
 
   task convert_page_parts_to_json: :environment do
-    Spina.config.locales do |locale|
+    Spina.config.locales.each do |locale|
       I18n.with_locale(locale) do
         Spina::Page.all.each do |page|
           page_parts = Spina::PagePart.where(page_id: page.id)
@@ -16,7 +16,7 @@ namespace :spina do
             end
           end.compact
 
-          page.update("#{locale}_content}".to_sym => json_content)
+          page.update("#{locale}_content".to_sym => json_content)
         end
       end
     end
