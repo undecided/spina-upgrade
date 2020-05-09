@@ -6,9 +6,9 @@ namespace :spina do
         Spina::Page.all.each do |page|
           page_parts = Spina::PagePart.where(page_id: page.id)
           json_content = page_parts.map do |page_part|
-            next if page_part.partable.nil? # Skip blank page parts
+            next if page_part.page_partable.nil? # Skip blank page parts
 
-            json_part = if page_part.partable.respond_to?(:convert_to_json!)
+            json_part = if page_part.page_partable.respond_to?(:convert_to_json!)
               page_part.convert_to_json!
             else
               puts "#{page_part.name} (#{page_part.page_partable_type}) does not convert to JSON yet. Implement it first."
