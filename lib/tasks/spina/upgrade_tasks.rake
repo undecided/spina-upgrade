@@ -1,20 +1,24 @@
 namespace :spina do
 
   task convert_page_parts_to_json: :environment do
-    Spina::Page.all.each do |page|
-      page_parts = Spina::PagePart.where(page_id: page.id)
-      json_content = page_parts.map do |page_part|
-        next if page_part.partable.nil? # Skip blank page parts
+    Spina.config.locales do |locale|
+      I18n.with_locale(locale) do
+        Spina::Page.all.each do |page|
+          page_parts = Spina::PagePart.where(page_id: page.id)
+          json_content = page_parts.map do |page_part|
+            next if page_part.partable.nil? # Skip blank page parts
 
-        json_part = if page_part.partable.respond_to?(:convert_to_json!)
-          page_part.convert_to_json!
-        else
-          puts "#{page_part.name} (#{page_part.page_partable_type}) does not convert to JSON yet. Implement it first."
-          nil
+            json_part = if page_part.partable.respond_to?(:convert_to_json!)
+              page_part.convert_to_json!
+            else
+              puts "#{page_part.name} (#{page_part.page_partable_type}) does not convert to JSON yet. Implement it first."
+              nil
+            end
+          end.compact
+
+          page.update("#{locale}_content}".to_sym => json_content)
         end
-      end.compact
-
-      page.update(nl_content: json_content)
+      end
     end
   end
 
