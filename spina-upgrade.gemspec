@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Bram Jetten"]
   s.email       = ["bram@denkgroot.com"]
   s.homepage    = "https://www.spinacms.com"
-  s.summary     = "Upgrade Spina to 1.0"
-  s.description = "Upgrade Spina to 1.0 from a previous version"
+  s.summary     = "Upgrade Spina to 2.0"
+  s.description = "Upgrade Spina to 2.0 from a previous version"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
