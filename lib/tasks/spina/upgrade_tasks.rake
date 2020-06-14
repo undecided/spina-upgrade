@@ -5,6 +5,50 @@ end
 
 namespace :spina do
 
+  task convert_layout_parts_to_json: :environment do
+    layout_partable_types = Spina::LayoutPart.all.pluck(:layout_partable_type).uniq
+    puts "Checking if parts are convertable to JSON..."
+
+    all_set = true
+
+    layout_partable_types.each do |partable_type|
+      if partable_type.constantize.new.respond_to?(:convert_to_json!)
+        puts "✓ #{partable_type}"
+      else
+        puts "✗ #{partable_type}"
+        all_set = false
+      end
+    end
+
+    unless all_set
+      answer = prompt("Not all parts can be converted to JSON. Continue? (y/n) ")
+      answer = false if answer == "n"
+      all_set = ActiveRecord::Type::Boolean.new.cast(answer)
+    end
+
+    if all_set
+      account = Spina::Account.first
+      Spina.config.locales.each do |locale|
+        I18n.with_locale(locale) do
+          layout_parts = Spina::LayoutPart.all
+          json_content = layout_parts.map do |layout_part|
+            next if layout_part.layout_partable.nil? # Skip blank parts
+
+            json_part = if layout_part.layout_partable.respond_to?(:convert_to_json!)
+              layout_part.convert_to_json!
+            else
+              nil
+            end
+          end.compact
+
+          account.update("#{locale}_content".to_sym => json_content)
+        end
+      end
+
+      puts "Converted!"
+    end
+  end
+
   task convert_page_parts_to_json: :environment do
     page_partable_types = Spina::PagePart.joins(:page).pluck(:page_partable_type).uniq
     puts "Checking if parts are convertable to JSON..."
