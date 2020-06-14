@@ -11,7 +11,8 @@ module Spina
     end
 
     def upgrade
-      rake 'spina:photo_to_image'
+      rake 'spina:convert_page_parts_to_json'
+      rake 'spina:convert_layout_parts_to_json'
     end
 
     def done
