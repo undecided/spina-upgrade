@@ -5,6 +5,7 @@ namespace :spina do
     Spina::Photo.where(image_id: nil).find_each do |photo|
       image = Spina::Image.create(media_folder_id: photo.media_folder_id)
       begin
+        require 'pry'; binding.pry
         image.file.attach(io: photo.file.sanitized_file.file, filename: photo.name)
         photo.update_column(:image_id, image.id)
       rescue Errno::ENOENT
